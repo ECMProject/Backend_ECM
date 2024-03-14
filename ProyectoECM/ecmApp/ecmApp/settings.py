@@ -36,7 +36,7 @@ SECRET_KEY = get_random_secret_key()
 # settings.py
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['209.38.192.175']
 
 # Application definition
 
