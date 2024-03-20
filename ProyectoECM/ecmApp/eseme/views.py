@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
-from .models import Student, Member, Course, Season
+from .models import Student, Member, Course, Season, Period
 from .serializers import StudentSerializer, MemberSerializer, CourseSerializer, SeasonSerializer, StudentPutSerializer
 from django.db.models import Q
 
@@ -83,8 +83,12 @@ class SeasonListAPIView(generics.ListAPIView):
     serializer_class = SeasonSerializer
     
     def get_queryset(self):
+        queryset = Season.objects.all()
         user_id = self.kwargs['user']
-        return Season.objects.exclude(student__stud_member=user_id)
+        
+        queryset = queryset.filter(seas_period__peri_status=True)
+        
+        return queryset.exclude(student__stud_member=user_id)
 
 class LoginAPIView(generics.ListAPIView):
     serializer_class = MemberSerializer
