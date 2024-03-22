@@ -19,7 +19,7 @@ class StudentCoursesAPIView(generics.ListAPIView):
         user_id = self.kwargs.get('user_id')
         
         queryset = Student.objects.filter(stud_member__memb_id=user_id)
-        queryset = queryset.filter(seas_final__gt = 13)
+        queryset = queryset.filter(seas_final__gt = 14)
         queryset = queryset.order_by('stud_season__seas_course__cour_level')
         return queryset
 
