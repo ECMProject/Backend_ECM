@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from .models import Student, Member, Course, Season, Period
 from .serializers import StudentSerializer, MemberSerializer, CourseSerializer, SeasonSerializer, StudentPutSerializer
-from django.db.models import Q
+from django.db.models import Q, F
 
 class StudentSeasonsAPIView(generics.ListAPIView):
     serializer_class = StudentSerializer
@@ -11,6 +11,18 @@ class StudentSeasonsAPIView(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
         return Student.objects.filter(stud_member__memb_id=user_id)
+
+class StudentCoursesAPIView(generics.ListAPIView):
+    serializer_class = StudentSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        
+        queryset = Student.objects.filter(stud_member__memb_id=user_id)
+        queryset = queryset.filter(seas_final__gt = 13)
+        queryset = queryset.order_by('stud_season__seas_course__cour_level')
+        return queryset
+
     
 class StudentListAPIView(generics.ListAPIView):
     serializer_class = StudentSerializer

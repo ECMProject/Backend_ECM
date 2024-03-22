@@ -8,7 +8,6 @@ class SeasonSerializer(serializers.ModelSerializer):
         depth = 1
 
 class StudentSerializer(serializers.ModelSerializer):
-    
     stud_member_id = serializers.IntegerField(write_only=True)
     stud_season_id = serializers.IntegerField(write_only=True)
     

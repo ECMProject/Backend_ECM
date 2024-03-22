@@ -5,6 +5,7 @@ from .views import *
 urlpatterns = [
     # ----------------------- SEASONS URL'S -----------------------
     path('season/<int:user_id>', StudentSeasonsAPIView.as_view(), name='student-seasons'),
+    path('season/course/<int:user_id>', StudentCoursesAPIView.as_view(), name='student-courses'),
     path('season/list/<int:user>', SeasonListAPIView.as_view(), name='season-list'),
     
     # ----------------------- MEMBERS URL'S -----------------------
