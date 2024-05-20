@@ -1,10 +1,11 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
-from .models import Student, Member, Course, Season, Period
+from .models import Student, Member, Course, Season, Zone
 from .serializers import StudentSerializer, MemberSerializer, CourseSerializer, SeasonSerializer, StudentPutSerializer
 from django.db.models import Q, F
 
+# ----------------------- STUDENT VIEWS ----------------------- #
 class StudentSeasonsAPIView(generics.ListAPIView):
     serializer_class = StudentSerializer
 
@@ -19,7 +20,7 @@ class StudentCoursesAPIView(generics.ListAPIView):
         user_id = self.kwargs.get('user_id')
         
         queryset = Student.objects.filter(stud_member__memb_id=user_id)
-        queryset = queryset.filter(seas_final__gt = 14)
+        queryset = queryset.filter(seas_final__gt = 13)
         queryset = queryset.order_by('stud_season__seas_course__cour_level')
         return queryset
 
@@ -74,7 +75,8 @@ class StudentCreateAPIView(generics.CreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors)
-    
+
+# ----------------------- MEMBER VIEWS ----------------------- #
 class MemberListAPIView(generics.ListAPIView):
     serializer_class = MemberSerializer
     
@@ -86,11 +88,35 @@ class MemberListAPIView(generics.ListAPIView):
             queryset = queryset.filter(Q(memb_name__icontains=name) | Q(memb_surname__icontains=name))
         
         return queryset
-    
+
+class MemberCreateAPIView(generics.CreateAPIView):
+    serializer_class = MemberSerializer
+
+    def create(self, request):
+        zone_name = request.data.pop('memb_zone', None)
+        
+        if zone_name is not None:
+            try:
+                zone = Zone.objects.get(zone_name=zone_name)
+                request.data['memb_zone'] = zone.zone_id
+            except Zone.DoesNotExist:
+                return Response({"error": "Zone does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ----------------------- COURSE VIEWS ----------------------- #
 class CourseListAPIView(generics.ListAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    
+
+# ----------------------- SEASON VIEWS ----------------------- #
 class SeasonListAPIView(generics.ListAPIView):
     serializer_class = SeasonSerializer
     
@@ -102,6 +128,32 @@ class SeasonListAPIView(generics.ListAPIView):
         
         return queryset.exclude(student__stud_member=user_id)
 
+class StudentCreateDeclarativaAPIView(generics.CreateAPIView):
+    serializer_class = StudentSerializer
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        cursos_data = request.data.get('cursos', [])
+        member_id = request.data.get('member_id')
+
+        for curso_data in cursos_data:
+            seas_id = Season.objects.filter(seas_course=curso_data['cour_id']).values_list('seas_id', flat=True).first()
+            if not seas_id:
+                continue
+
+            student_data = {
+                'stud_season': seas_id,
+                'stud_member': member_id,
+                'seas_final': 17,
+            }
+
+            serializer = self.get_serializer(data=student_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+# ----------------------- USER VIEWS ----------------------- #
 class LoginAPIView(generics.ListAPIView):
     serializer_class = MemberSerializer
     

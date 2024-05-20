@@ -10,9 +10,11 @@ urlpatterns = [
     
     # ----------------------- MEMBERS URL'S -----------------------
     path('members/list', MemberListAPIView.as_view(), name='member-list'),
+    path('members/create', MemberCreateAPIView.as_view(), name='member-create'),
     
     # ----------------------- COURSES URL'S -----------------------
     path('courses/list', CourseListAPIView.as_view(), name='course-list'),
+    path('courses/create', StudentCreateDeclarativaAPIView.as_view(), name='season-course-create'),
 
     # ----------------------- STUDENT URL'S -----------------------
     path('teacher/list/<int:teacher>', TeacherListView.as_view(), name='teacher-list'),
