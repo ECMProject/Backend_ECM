@@ -6,6 +6,11 @@ class SeasonSerializer(serializers.ModelSerializer):
         model = Season
         fields = '__all__'
         depth = 1
+        
+class StudentDeclarativaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = '__all__'
 
 class StudentSerializer(serializers.ModelSerializer):
     stud_member_id = serializers.IntegerField(write_only=True)
@@ -24,11 +29,16 @@ class StudentPutSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 2
         
-class MemberSerializer(serializers.ModelSerializer):
+class MemberGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
         fields = '__all__'
         depth = 2
+        
+class MemberCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = '__all__'
         
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
