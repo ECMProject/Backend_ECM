@@ -11,6 +11,7 @@ class StudentDeclarativaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
+        depth = 1
 
 class StudentSerializer(serializers.ModelSerializer):
     stud_member_id = serializers.IntegerField(write_only=True)
